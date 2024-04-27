@@ -1,4 +1,5 @@
 # Oracle Foreign Data Wrapper for Postgres
 
-Built from release 2.6.0 of github.com/laurenz/oracle_fdw
+Built from github.com/laurenz/oracle_fdw
 
+For documentation and known issues, please refer to http://laurenz.github.io/oracle_fdw
