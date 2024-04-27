@@ -1,9 +1,10 @@
-FROM ubuntu:24.04 as installer
+FROM postgres:16.2
 
 WORKDIR /installer
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     apt-utils \
+    libaio1 \
     libaio-dev \
     build-essential \
     make \
@@ -33,31 +34,20 @@ RUN ldconfig
 # download the oracle_fdw source files
 RUN wget --no-check-certificate https://github.com/laurenz/oracle_fdw/archive/refs/tags/ORACLE_FDW_2_6_0.zip
 RUN unzip ORACLE_FDW_2_6_0.zip
-# RUN cat /etc/ld.so.conf.d/oracle.conf; exit 1;
-ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/lib/oracle/21.14
 ENV ORACLE_HOME=/usr/lib/oracle/21.14
 ENV LD_LIBRARY_PATH=/usr/lib/oracle/21.14
 RUN cd oracle_fdw-ORACLE_FDW_2_6_0 && make && make install
 
-FROM postgres:16.2
-
-
-COPY --from=installer /usr/lib/oracle/21.14 /usr/lib/oracle/21.14
-COPY --from=installer /etc/ld.so.conf.d/oracle.conf /etc/ld.so.conf.d/oracle.conf
-COPY --from=installer /etc/profile.d/oracle.sh /etc/profile.d/oracle.sh
-COPY --from=installer /usr/lib/postgresql/16/lib/oracle_fdw.so /usr/lib/postgresql/16/lib/oracle_fdw.so
-COPY --from=installer /usr/share/postgresql/16/extension/oracle_fdw.control /usr/share/postgresql/16/extension/oracle_fdw.control
-COPY --from=installer /usr/share/postgresql/16/extension/*.sql /usr/share/postgresql/16/extension/
-COPY --from=installer /usr/share/doc/postgresql-doc-16/extension/README.oracle_fdw /usr/share/doc/postgresql-doc-16/extension/README.oracle_fdw
+RUN rm -rf /installer
 
 RUN echo "export ORACLE_HOME=/usr/lib/oracle/21.14" >> ~/.bashrc
 
 RUN echo "export LD_LIBRARY_PATH=/usr/lib/oracle/21.14" >> ~/.bashrc
 
-RUN echo "export PATH=/usr/lib/oracle/21.14:$PATH" >> ~/.bashrc
-
 RUN ldconfig
 
 RUN echo "CREATE EXTENSION oracle_fdw;" > /docker-entrypoint-initdb.d/01_oracle_fdw.sql
+
+WORKDIR /
 
 USER postgres

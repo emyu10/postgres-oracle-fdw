@@ -1,0 +1,11 @@
+# use this file for development only
+services:
+  postgres:
+    build: .
+    container_name: postgres-oracle
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: somecrypticpassword
+      POSTGRES_DB: postgres
