@@ -13,4 +13,6 @@ docker run --name postgres -p 5432:5432 emyu10/postgres-oracle-fdw
 ```
 
 After running, check if the extension is enabled. If not just run
-```CREATE EXTENSION oracle_fdw;``` in psql
+```CREATE EXTENSION oracle_fdw;``` in psql.
+
+For additional information on how to use postgres docker images, visit postgres docker hub page.
