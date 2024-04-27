@@ -9,7 +9,7 @@ This is a postgres server. So just pull the image and run it.
 
 ```bash
 docker pull emyu10/postgres-oracle-fdw
-docker run --name postgres -p 5432:5432 emyu10/postgres-oracle-fdw
+docker run --name postgres -p 5432:5432 -e POSTGRES_PASSWORD=S3curePasSw0rd emyu10/postgres-oracle-fdw
 ```
 
 After running, check if the extension is enabled. If not just run
