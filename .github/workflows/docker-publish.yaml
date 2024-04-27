@@ -1,0 +1,44 @@
+name: CI/CD
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "*.*-*.*.*"
+
+env:
+  REGISTRY: hub.docker.com
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Get tag name
+        uses: little-core-labs/get-git-tag@v3.0.1
+        id: tagName
+        # with:
+        #   tagRegex: "foobar-(.*)"  # Optional. Returns specified group text as tag name. Full tag string is returned if regex is not defined.
+        #   tagRegexGroup: 1 # Optional. Default is 1.
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+
+      - name: Echo test
+        run: echo ${{ steps.tagName.outputs.tag }}
+    #   - name: Build and push
+    #     uses: docker/build-push-action@v4
+    #     with:
+    #       context: .
+    #       push: true
+    #       tags: ${{ steps.tagName.outputs.tag }}
+    #       labels: ${{ steps.meta.outputs.labels }}
+    #       secrets: |
+    #         "OMEGA_API_ENV=${{ secrets.OMEGA_API_ENV }}"
